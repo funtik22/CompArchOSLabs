@@ -23,27 +23,44 @@ std::vector<Image> getImagesList(const char * initialDir, const char * resultDir
 int main(int argc, const char * argv[]){
     LogDuration ld("1");
 
-
-    if (argc != 3) { 
-        printf("usage: buffer.out <Initial_Directory_Images_Path> <Result_Directory_Images_Path>\n"); 
-        return -1; 
+  // Check the number of arguments
+    if (argc != 3) {
+        std::cerr << "Error: Incorrect number of arguments.\n";
+        std::cerr << "Usage: buffer.out <Initial_Directory_Images_Path> <Result_Directory_Images_Path>\n";
+        return -1;
     }
+
+    // Verify the existence of directories
+    DIR *initialDir = opendir(argv[1]);
+    DIR *resultDir = opendir(argv[2]);
+    if (initialDir == NULL) {
+        perror("Error: Invalid initial directory path");
+        return -1;
+    }
+    if (resultDir == NULL) {
+        perror("Error: Invalid result directory path");
+        closedir(initialDir);
+        return -1;
+    }
+    closedir(initialDir);
+    closedir(resultDir);
  
 
     std::cout << "Executing code in main...\n";
     
-    srand (time(NULL));
+    srand(time(NULL));
     
     Buffer<Image> buffer;
     
-    std::vector<std::thread> producers_and_consumers;
+ 
     
     std::vector<Image> images = getImagesList(argv[1], argv[2]);
     if(images.empty()){
-        perror("invalid path to directories or empty folders");
+        std::cerr << "Error: No valid images found in the input directory.\n";
         return -1;
     }
     int step = (images.size()/NUM_PRODUCERS);
+    std::vector<std::thread> producers_and_consumers;
         // Create producers
     for(int i = 0; i < NUM_PRODUCERS; ++i)
             producers_and_consumers.push_back(std::thread(produceImage, 
@@ -103,5 +120,7 @@ std::vector<Image> getImagesList(const char * initialDirName, const char * resul
             images.push_back(Image(pathToImage, pathToNewImage));
         }
     }
+    closedir(initialDir);
+    closedir(resultDir);
     return images;
 }
