@@ -7,10 +7,10 @@
 #include <atomic>
 #include "Time.cpp"
 
-#define NUM_PRODUCERS 5
-#define NUM_CONSUMERS 5
+#define NUM_PRODUCERS 6
+#define NUM_CONSUMERS 6
 #define PRODUCER_DELAY_TO_PRODUCE 1
-#define CONSUMER_DELAY_TO_CONSUME 3
+#define CONSUMER_DELAY_TO_CONSUME 1
 
 
 std::atomic<int> num_producers_working(0);
